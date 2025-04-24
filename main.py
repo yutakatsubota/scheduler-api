@@ -1,5 +1,9 @@
-from fastapi import FastAPI, Request
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from notion_writer import write_to_notion
+
+from fastapi import FastAPI, Request
 import uvicorn
 
 app = FastAPI()
