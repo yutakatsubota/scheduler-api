@@ -70,4 +70,5 @@ def delete_from_t_stock(page_id):
         "archived": True
     }
     response = requests.patch(url, headers=headers, json=payload)
+    print("DEBUG DELETE:", response.status_code, response.text)  # ここでレスポンス詳細を出力
     return response.status_code
