@@ -16,3 +16,27 @@ async def add_schedule(req: Request):
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000)
+
+    from fastapi import FastAPI, Request
+from notion_writer import write_to_t_stock, write_to_3day_goal, write_to_monthly_goal
+
+app = FastAPI()
+
+@app.post("/t_stock")
+async def post_to_t_stock(request: Request):
+    data = await request.json()
+    result = write_to_t_stock(data)
+    return {"status": "ok", "result": result}
+
+@app.post("/3day_goal")
+async def post_to_3day_goal(request: Request):
+    data = await request.json()
+    result = write_to_3day_goal(data)
+    return {"status": "ok", "result": result}
+
+@app.post("/monthly_goal")
+async def post_to_monthly_goal(request: Request):
+    data = await request.json()
+    result = write_to_monthly_goal(data)
+    return {"status": "ok", "result": result}
+
