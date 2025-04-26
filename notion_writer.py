@@ -55,4 +55,6 @@ def write_to_notion_with_db_id(data, db_id):
             "内容": {"title": [{"text": {"content": data["content"]}}]}
         }
     }
-    return requests.post(url, headers=HEADERS, json=payload).status_code
+    response = requests.post(url, headers=HEADERS, json=payload)
+    print("DEBUG:", response.status_code, response.text)  # レスポンスの詳細を出力する行を追加
+    return response.status_code
