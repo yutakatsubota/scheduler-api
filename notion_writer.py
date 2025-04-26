@@ -58,3 +58,16 @@ def write_to_notion_with_db_id(data, db_id):
     response = requests.post(url, headers=HEADERS, json=payload)
     print("DEBUG:", response.status_code, response.text)  # レスポンスの詳細を出力する行を追加
     return response.status_code
+
+def delete_from_t_stock(page_id):
+    url = f"https://api.notion.com/v1/pages/{page_id}"
+    headers = {
+        "Authorization": f"Bearer {NOTION_TOKEN}",
+        "Content-Type": "application/json",
+        "Notion-Version": "2022-06-28"
+    }
+    payload = {
+        "archived": True
+    }
+    response = requests.patch(url, headers=headers, json=payload)
+    return response.status_code
