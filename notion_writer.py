@@ -45,11 +45,12 @@ def write_to_notion_with_db_id(data, db_id):
         "parent": {"database_id": db_id},
         "properties": {
             "日付": {"date": {"start": data["date"]}},
-            "内容": {"title": [{"text": {"content": data["content"]}}]}
+            "内容": {"title": [{"text": {"content": data["content"]}}]},
+            "振り返り": {"rich_text": [{"text": {"content": data["review"]}}]}
         }
     }
     response = requests.post(url, headers=HEADERS, json=payload)
-    print("DEBUG:", response.status_code, response.text)  # レスポンスの詳細を出力する行を追加
+    print("DEBUG:", response.status_code, response.text)
     return response.status_code
 
 def delete_from_t_stock(page_id):
