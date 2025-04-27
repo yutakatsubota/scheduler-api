@@ -12,7 +12,7 @@ from notion_writer import (
     delete_from_3day_goal,
     delete_from_monthly_goal,
     update_page_in_db,
-    update_schedule_in_db   # ←ここ追加！！
+    update_schedule_in_db,
     archive_page   # ←これ追加！
 )
 import uvicorn
