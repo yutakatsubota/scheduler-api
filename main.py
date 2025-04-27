@@ -57,6 +57,11 @@ async def delete_monthly_goal(page_id: str):
     result = delete_from_monthly_goal(page_id)
     return {"status": "ok", "result": result}
 
+@app.delete("/schedule/{page_id}")
+async def delete_schedule(page_id: str):
+    result = archive_page(page_id)
+    return {"status": "ok", "result": result}
+
 @app.patch("/t_stock/{page_id}")
 async def update_t_stock(page_id: str, request: Request):
     data = await request.json()
