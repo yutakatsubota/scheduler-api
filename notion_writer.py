@@ -16,7 +16,7 @@ def write_to_notion(data):
         "日付": {"date": {"start": data["date"]}},
         "内容": {"title": [{"text": {"content": data["content"]}}]},
         "目安時間": {"rich_text": [{"text": {"content": data["duration"]}}]},
-        "カテゴリ": {"rich_text": [{"text": {"content": data["category"]}}]},
+        "カテゴリ": {"select": {"name": data["category"]}},  # カテゴリもselect型に正式対応！
         "実行状況": {"select": {"name": data["status"]}},
         "振り返り": {"rich_text": [{"text": {"content": data["review"]}}]}
     }
