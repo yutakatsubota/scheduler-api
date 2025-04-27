@@ -9,26 +9,25 @@ HEADERS = {
     "Content-Type": "application/json",
     "Notion-Version": "2022-06-28"
 }
-
 def write_to_notion(data):
-    headers = {
-        "Authorization": f"Bearer {NOTION_TOKEN}",
-        "Content-Type": "application/json",
-        "Notion-Version": "2022-06-28"
+    url = "https://api.notion.com/v1/pages"
+
+    properties = {
+        "日付": {"date": {"start": data["date"]}},
+        "内容": {"title": [{"text": {"content": data["content"]}}]},
+        "目安時間": {"rich_text": [{"text": {"content": data["duration"]}}]},
+        "カテゴリ": {"rich_text": [{"text": {"content": data["category"]}}]},
+        "実行状況": {"select": {"name": data["status"]}},
+        "振り返り": {"rich_text": [{"text": {"content": data["review"]}}]}
     }
-    url = f"https://api.notion.com/v1/pages"
 
     payload = {
         "parent": {"database_id": os.getenv("DATABASE_ID")},
-        "properties": {
-            "日付": {"date": {"start": data["date"]}},
-            "内容": {"title": [{"text": {"content": data["content"]}}]},
-            "カテゴリ": {"select": {"name": data["category"]}},
-            "目安時間": {"rich_text": [{"text": {"content": data["duration"]}}]}
-        }
+        "properties": properties
     }
 
-    response = requests.post(url, headers=headers, json=payload)
+    response = requests.post(url, headers=HEADERS, json=payload)
+    print("DEBUG POST:", response.status_code, response.text)
     return response.status_code
 
 def write_to_t_stock(data):
