@@ -90,3 +90,19 @@ def update_page_in_db(page_id, data):
     response = requests.patch(url, headers=HEADERS, json=payload)
     print("DEBUG PATCH:", response.status_code, response.text)
     return response.status_code
+
+def update_schedule_in_db(page_id, data):
+    url = f"https://api.notion.com/v1/pages/{page_id}"
+    payload = {
+        "properties": {
+            "日付": {"date": {"start": data["date"]}},
+            "内容": {"title": [{"text": {"content": data["content"]}}]},
+            "目安時間": {"rich_text": [{"text": {"content": data["duration"]}}]},
+            "カテゴリ": {"select": {"name": data["category"]}},
+            "実行状況": {"select": {"name": data["status"]}},
+            "振り返り": {"rich_text": [{"text": {"content": data["review"]}}]}
+        }
+    }
+    response = requests.patch(url, headers=HEADERS, json=payload)
+    print("DEBUG PATCH SCHEDULE:", response.status_code, response.text)
+    return response.status_code

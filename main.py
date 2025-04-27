@@ -76,3 +76,9 @@ async def update_monthly_goal(page_id: str, request: Request):
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000)
+
+@app.patch("/schedule/{page_id}")
+async def update_schedule(page_id: str, request: Request):
+    data = await request.json()
+    result = update_schedule_in_db(page_id, data)
+    return {"status": "ok", "result": result}
