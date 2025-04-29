@@ -28,8 +28,8 @@ def write_to_notion(data):
         "内容": {"title": [{"text": {"content": data["content"]}}]},
         "目安時間": {"rich_text": [{"text": {"content": data["duration"]}}]},
         "カテゴリ": {"select": {"name": data["category"]}},
-        "実施状況": {"select": {"name": data["status"]}},
-        "振り返り": {"rich_text": [{"text": {"content": data["review"]}}]}
+        **({"実施状況": {"select": {"name": data["status"]}}} if "status" in data and data["status"] else {}),
+        **({"振り返り": {"rich_text": [{"text": {"content": data["review"]}}]}} if "review" in data and data["review"] else {})
     }
     payload = {
         "parent": {"database_id": DATABASE_ID},

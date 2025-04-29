@@ -36,26 +36,26 @@ app = FastAPI()
 @app.post("/schedule")
 async def add_schedule(req: Request):
     data = await req.json()
+    data["status"] = data.get("status", "")
     result = write_to_notion(data)
     return {"status": "ok", "result": result}
 
 @app.post("/t_stock")
 async def post_to_t_stock(request: Request):
     data = await request.json()
+    # Safely handle optional fields, e.g. "memo"
+    data["memo"] = data.get("memo", "")
     result = write_to_t_stock(data)
     return {"status": "ok", "result": result}
 
 @app.post("/3day_goal")
 async def post_to_3day_goal(request: Request):
     data = await request.json()
+    # Safely handle optional fields, e.g. "review"
+    data["review"] = data.get("review", "")
     result = write_to_3day_goal(data)
     return {"status": "ok", "result": result}
 
-@app.post("/monthly_goal")
-async def post_to_monthly_goal(request: Request):
-    data = await request.json()
-    result = write_to_monthly_goal(data)
-    return {"status": "ok", "result": result}
 
 @app.delete("/t_stock/{page_id}")
 async def delete_t_stock(page_id: str):
@@ -98,6 +98,8 @@ async def update_monthly_goal(page_id: str, request: Request):
 @app.post("/operation_db")
 async def post_to_operation_db(request: Request):
     data = await request.json()
+    # Safely handle optional fields, e.g. "memo"
+    data["memo"] = data.get("memo", "")
     result = write_to_operation_db(data)
     return {"status": "ok", "result": result}
 
@@ -115,6 +117,8 @@ async def delete_operation_db(page_id: str):
 @app.post("/idea_db")
 async def post_to_idea_db(request: Request):
     data = await request.json()
+    # Safely handle optional fields, e.g. "memo"
+    data["memo"] = data.get("memo", "")
     result = write_to_idea_db(data)
     return {"status": "ok", "result": result}
 
@@ -146,6 +150,14 @@ async def fetch_operation_db_endpoint():
 async def fetch_idea_db_endpoint():
     status_code, result = fetch_idea_db()
     return {"status": status_code, "result": result}
+
+@app.post("/monthly_goal")
+async def post_to_monthly_goal(request: Request):
+    data = await request.json()
+    print("DEBUG POST monthly_goal:", data)
+    data["review"] = data.get("review", "")
+    result = write_to_monthly_goal(data)
+    return {"status": "ok", "result": result}
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000)
