@@ -28,7 +28,7 @@ def write_to_notion(data):
         "内容": {"title": [{"text": {"content": data["content"]}}]},
         "目安時間": {"rich_text": [{"text": {"content": data["duration"]}}]},
         "カテゴリ": {"select": {"name": data["category"]}},
-        **({"実施状況": {"select": {"name": data["status"]}}} if "status" in data and data["status"] else {}),
+        **({"実行状況": {"select": {"name": data["status"]}}} if "status" in data and data["status"] else {}),
         **({"振り返り": {"rich_text": [{"text": {"content": data["review"]}}]}} if "review" in data and data["review"] else {})
     }
     payload = {
@@ -41,14 +41,22 @@ def write_to_notion(data):
 
 def update_schedule_in_db(page_id, data):
     url = f"https://api.notion.com/v1/pages/{page_id}"
-    properties = {
-        "日付": {"date": {"start": data["date"]}},
-        "内容": {"title": [{"text": {"content": data["content"]}}]},
-        "目安時間": {"rich_text": [{"text": {"content": data["duration"]}}]},
-        "カテゴリ": {"select": {"name": data["category"]}},
-        "実施状況": {"select": {"name": data["status"]}},
-        "振り返り": {"rich_text": [{"text": {"content": data["review"]}}]}
-    }
+    properties = {}
+    if "date" in data and data["date"]:
+        properties["日付"] = {"date": {"start": data["date"]}}
+    if "content" in data and data["content"]:
+        properties["内容"] = {"title": [{"text": {"content": data["content"]}}]}
+    if "duration" in data and data["duration"]:
+        properties["目安時間"] = {"rich_text": [{"text": {"content": data["duration"]}}]}
+    if "category" in data and data["category"]:
+        properties["カテゴリ"] = {"select": {"name": data["category"]}}
+    if "status" in data and data["status"]:
+        properties["実行状況"] = {"select": {"name": data["status"]}}
+    if "review" in data and data["review"]:
+        properties["振り返り"] = {"rich_text": [{"text": {"content": data["review"]}}]}
+    if not properties:
+        print("DEBUG PATCH SKIPPED: empty properties")
+        return 400
     payload = {
         "properties": properties
     }
@@ -84,7 +92,7 @@ def write_to_3day_goal(data):
         "properties": {
             "日付": {"date": {"start": data["date"]}},
             "内容": {"title": [{"text": {"content": data["content"]}}]},
-            "振り返り": {"rich_text": [{"text": {"content": data["review"]}}]}
+            **({"振り返り": {"rich_text": [{"text": {"content": data["review"]}}]}} if "review" in data and data["review"] else {})
         }
     }
     response = requests.post(url, headers=HEADERS, json=payload)
@@ -98,7 +106,7 @@ def write_to_monthly_goal(data):
         "properties": {
             "日付": {"date": {"start": data["date"]}},
             "内容": {"title": [{"text": {"content": data["content"]}}]},
-            "振り返り": {"rich_text": [{"text": {"content": data["review"]}}]}
+            **({"振り返り": {"rich_text": [{"text": {"content": data["review"]}}]}} if "review" in data and data["review"] else {})
         }
     }
     response = requests.post(url, headers=HEADERS, json=payload)
@@ -108,10 +116,16 @@ def write_to_monthly_goal(data):
 # 共通PATCH用（Tストック、3日目標、1ヶ月目標）
 def update_page_in_db(page_id, data):
     url = f"https://api.notion.com/v1/pages/{page_id}"
-    properties = {
-        "日付": {"date": {"start": data["date"]}},
-        "内容": {"title": [{"text": {"content": data["content"]}}]}
-    }
+    properties = {}
+    if "date" in data:
+        properties["日付"] = {"date": {"start": data["date"]}}
+    if "content" in data:
+        properties["内容"] = {"title": [{"text": {"content": data["content"]}}]}
+    if "review" in data and data["review"]:
+        properties["振り返り"] = {"rich_text": [{"text": {"content": data["review"]}}]}
+    if not properties:
+        print("DEBUG PATCH SKIPPED: empty properties")
+        return 400
     payload = {
         "properties": properties
     }
@@ -145,11 +159,16 @@ def write_to_operation_db(data):
 
 def update_operation_db(page_id, data):
     url = f"https://api.notion.com/v1/pages/{page_id}"
+    properties = {}
+    if "title" in data:
+        properties["タイトル"] = {"title": [{"text": {"content": data["title"]}}]}
+    if "content" in data:
+        properties["内容"] = {"rich_text": [{"text": {"content": data["content"]}}]}
+    if not properties:
+        print("DEBUG PATCH SKIPPED: empty properties")
+        return 400
     payload = {
-        "properties": {
-            "タイトル": {"title": [{"text": {"content": data["title"]}}]},
-            "内容": {"rich_text": [{"text": {"content": data["content"]}}]}
-        }
+        "properties": properties
     }
     response = requests.patch(url, headers=HEADERS, json=payload)
     print("DEBUG PATCH OPERATION DB:", response.status_code, response.text)
@@ -174,11 +193,16 @@ def write_to_idea_db(data):
 
 def update_idea_db(page_id, data):
     url = f"https://api.notion.com/v1/pages/{page_id}"
+    properties = {}
+    if "date" in data:
+        properties["日付"] = {"date": {"start": data["date"]}}
+    if "content" in data:
+        properties["内容"] = {"title": [{"text": {"content": data["content"]}}]}
+    if not properties:
+        print("DEBUG PATCH SKIPPED: empty properties")
+        return 400
     payload = {
-        "properties": {
-            "日付": {"date": {"start": data["date"]}},
-            "内容": {"rich_text": [{"text": {"content": data["content"]}}]}
-        }
+        "properties": properties
     }
     response = requests.patch(url, headers=HEADERS, json=payload)
     print("DEBUG PATCH IDEA DB:", response.status_code, response.text)
