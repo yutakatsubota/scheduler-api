@@ -19,9 +19,105 @@ HEADERS = {
     "Notion-Version": "2022-06-28"
 }
 
+# 共通アーカイブ関数
+def archive_page(page_id):
+    url = f"https://api.notion.com/v1/pages/{page_id}"
+    response = requests.patch(url, headers=HEADERS, json={"archived": True})
+    print("DEBUG ARCHIVE PAGE:", response.status_code, response.text)
+    return response.status_code
 
-# スケジュールログ用
-def write_to_notion(data):
+# 共通FETCH関数
+def fetch_database(database_id):
+    url = f"https://api.notion.com/v1/databases/{database_id}/query"
+    response = requests.post(url, headers=HEADERS)
+    print("DEBUG FETCH DATABASE:", response.status_code, response.text)  # デバッグログ
+    return response.status_code, response.json()
+
+
+# 1. 一ヶ月の目標（monthly_goal）
+def write_to_monthly_goal(data):
+    url = "https://api.notion.com/v1/pages"
+    payload = {
+        "parent": {"database_id": DB_ID_MONTHLY_GOAL},
+        "properties": {
+            "日付": {"date": {"start": data["date"]}},
+            "内容": {"title": [{"text": {"content": data["content"]}}]},
+            **({"振り返り": {"rich_text": [{"text": {"content": data["review"]}}]}} if "review" in data and data["review"] else {})
+        }
+    }
+    response = requests.post(url, headers=HEADERS, json=payload)
+    print("DEBUG POST MONTHLY GOAL:", response.status_code, response.text)
+    return response.status_code
+
+def update_monthly_goal(page_id, data):
+    url = f"https://api.notion.com/v1/pages/{page_id}"
+    properties = {}
+    if "date" in data:
+        properties["日付"] = {"date": {"start": data["date"]}}
+    if "content" in data:
+        properties["内容"] = {"title": [{"text": {"content": data["content"]}}]}
+    if "review" in data and data["review"]:
+        properties["振り返り"] = {"rich_text": [{"text": {"content": data["review"]}}]}
+    if not properties:
+        print("DEBUG PATCH SKIPPED: empty properties")
+        return 400
+    payload = {
+        "properties": properties
+    }
+    response = requests.patch(url, headers=HEADERS, json=payload)
+    print("DEBUG PATCH MONTHLY GOAL:", response.status_code, response.text)
+    return response.status_code
+
+def delete_from_monthly_goal(page_id):
+    return archive_page(page_id)
+
+def fetch_monthly_goal():
+    return fetch_database(DB_ID_MONTHLY_GOAL)
+
+
+# 2. 三日の目標（3day_goal）
+def write_to_3day_goal(data):
+    url = "https://api.notion.com/v1/pages"
+    payload = {
+        "parent": {"database_id": DB_ID_3DAY_GOAL},
+        "properties": {
+            "日付": {"date": {"start": data["date"]}},
+            "内容": {"title": [{"text": {"content": data["content"]}}]},
+            **({"振り返り": {"rich_text": [{"text": {"content": data["review"]}}]}} if "review" in data and data["review"] else {})
+        }
+    }
+    response = requests.post(url, headers=HEADERS, json=payload)
+    print("DEBUG POST 3DAY GOAL:", response.status_code, response.text)
+    return response.status_code
+
+def update_3day_goal(page_id, data):
+    url = f"https://api.notion.com/v1/pages/{page_id}"
+    properties = {}
+    if "date" in data:
+        properties["日付"] = {"date": {"start": data["date"]}}
+    if "content" in data:
+        properties["内容"] = {"title": [{"text": {"content": data["content"]}}]}
+    if "review" in data and data["review"]:
+        properties["振り返り"] = {"rich_text": [{"text": {"content": data["review"]}}]}
+    if not properties:
+        print("DEBUG PATCH SKIPPED: empty properties")
+        return 400
+    payload = {
+        "properties": properties
+    }
+    response = requests.patch(url, headers=HEADERS, json=payload)
+    print("DEBUG PATCH 3DAY GOAL:", response.status_code, response.text)
+    return response.status_code
+
+def delete_from_3day_goal(page_id):
+    return archive_page(page_id)
+
+def fetch_3day_goal():
+    return fetch_database(DB_ID_3DAY_GOAL)
+
+
+# 3. 一日のスケジュール（schedule）
+def write_to_schedule(data):
     url = "https://api.notion.com/v1/pages"
     properties = {
         "日付": {"date": {"start": data["date"]}},
@@ -39,7 +135,7 @@ def write_to_notion(data):
     print("DEBUG POST SCHEDULE:", response.status_code, response.text)
     return response.status_code
 
-def update_schedule_in_db(page_id, data):
+def update_schedule(page_id, data):
     url = f"https://api.notion.com/v1/pages/{page_id}"
     properties = {}
     if "date" in data and data["date"]:
@@ -64,14 +160,14 @@ def update_schedule_in_db(page_id, data):
     print("DEBUG PATCH SCHEDULE:", response.status_code, response.text)
     return response.status_code
 
-# 共通アーカイブ関数
-def archive_page(page_id):
-    url = f"https://api.notion.com/v1/pages/{page_id}"
-    response = requests.patch(url, headers=HEADERS, json={"archived": True})
-    print("DEBUG ARCHIVE PAGE:", response.status_code, response.text)
-    return response.status_code
+def delete_schedule(page_id):
+    return archive_page(page_id)
 
-# Tストック／3日目標／1ヶ月目標用
+def fetch_schedule():
+    return fetch_database(DATABASE_ID)
+
+
+# 4. Tストック（t_stock）
 def write_to_t_stock(data):
     url = "https://api.notion.com/v1/pages"
     payload = {
@@ -85,44 +181,13 @@ def write_to_t_stock(data):
     print("DEBUG POST T_STOCK:", response.status_code, response.text)
     return response.status_code
 
-def write_to_3day_goal(data):
-    url = "https://api.notion.com/v1/pages"
-    payload = {
-        "parent": {"database_id": DB_ID_3DAY_GOAL},
-        "properties": {
-            "日付": {"date": {"start": data["date"]}},
-            "内容": {"title": [{"text": {"content": data["content"]}}]},
-            **({"振り返り": {"rich_text": [{"text": {"content": data["review"]}}]}} if "review" in data and data["review"] else {})
-        }
-    }
-    response = requests.post(url, headers=HEADERS, json=payload)
-    print("DEBUG POST 3DAY GOAL:", response.status_code, response.text)
-    return response.status_code
-
-def write_to_monthly_goal(data):
-    url = "https://api.notion.com/v1/pages"
-    payload = {
-        "parent": {"database_id": DB_ID_MONTHLY_GOAL},
-        "properties": {
-            "日付": {"date": {"start": data["date"]}},
-            "内容": {"title": [{"text": {"content": data["content"]}}]},
-            **({"振り返り": {"rich_text": [{"text": {"content": data["review"]}}]}} if "review" in data and data["review"] else {})
-        }
-    }
-    response = requests.post(url, headers=HEADERS, json=payload)
-    print("DEBUG POST MONTHLY GOAL:", response.status_code, response.text)
-    return response.status_code
-
-# 共通PATCH用（Tストック、3日目標、1ヶ月目標）
-def update_page_in_db(page_id, data):
+def update_t_stock(page_id, data):
     url = f"https://api.notion.com/v1/pages/{page_id}"
     properties = {}
     if "date" in data:
         properties["日付"] = {"date": {"start": data["date"]}}
     if "content" in data:
         properties["内容"] = {"title": [{"text": {"content": data["content"]}}]}
-    if "review" in data and data["review"]:
-        properties["振り返り"] = {"rich_text": [{"text": {"content": data["review"]}}]}
     if not properties:
         print("DEBUG PATCH SKIPPED: empty properties")
         return 400
@@ -130,20 +195,17 @@ def update_page_in_db(page_id, data):
         "properties": properties
     }
     response = requests.patch(url, headers=HEADERS, json=payload)
-    print("DEBUG PATCH PAGE:", response.status_code, response.text)
+    print("DEBUG PATCH T_STOCK:", response.status_code, response.text)
     return response.status_code
 
-# Tストック／3日目標／1ヶ月目標用アーカイブ
 def delete_from_t_stock(page_id):
     return archive_page(page_id)
 
-def delete_from_3day_goal(page_id):
-    return archive_page(page_id)
+def fetch_t_stock():
+    return fetch_database(DB_ID_T_STOCK)
 
-def delete_from_monthly_goal(page_id):
-    return archive_page(page_id)
 
-# 運用DB (operation_db) 用関数
+# 5. 運用DB（operation_db）
 def write_to_operation_db(data):
     url = "https://api.notion.com/v1/pages"
     payload = {
@@ -177,7 +239,11 @@ def update_operation_db(page_id, data):
 def delete_from_operation_db(page_id):
     return archive_page(page_id)
 
-# 改善アイディアDB (idea_db) 用関数
+def fetch_operation_db():
+    return fetch_database(DB_ID_OPERATION)
+
+
+# 6. 改善アイディアDB（idea_db）
 def write_to_idea_db(data):
     url = "https://api.notion.com/v1/pages"
     payload = {
@@ -211,19 +277,5 @@ def update_idea_db(page_id, data):
 def delete_from_idea_db(page_id):
     return archive_page(page_id)
 
-def fetch_database(database_id):
-    url = f"https://api.notion.com/v1/databases/{database_id}/query"
-    response = requests.post(url, headers=HEADERS)
-    print("DEBUG FETCH DATABASE:", response.status_code, response.text)  # デバッグログ
-    return response.status_code, response.json()
-def fetch_operation_db():
-    url = f"https://api.notion.com/v1/databases/{DB_ID_OPERATION}/query"
-    response = requests.post(url, headers=HEADERS)
-    print("DEBUG FETCH OPERATION DB:", response.status_code, response.text)
-    return response.status_code, response.json()
-
 def fetch_idea_db():
-    url = f"https://api.notion.com/v1/databases/{DB_ID_IDEA}/query"
-    response = requests.post(url, headers=HEADERS)
-    print("DEBUG FETCH IDEA DB:", response.status_code, response.text)
-    return response.status_code, response.json()
+    return fetch_database(DB_ID_IDEA)

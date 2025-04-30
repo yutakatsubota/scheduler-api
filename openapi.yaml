@@ -1,0 +1,352 @@
+openapi: 3.1.0
+info:
+  title: 3days scheduler API
+  version: 1.0.0
+servers:
+  - url: https://scheduler-api-4jtg.onrender.com
+paths:
+  /monthly_goal:
+    # 1. POST: 登録
+    post:
+      operationId: postMonthlyGoal
+      summary: 一ヶ月の目標を追加
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [date, content]
+              properties:
+                date:
+                  type: string
+                content:
+                  type: string
+    # 2. PATCH: 修正
+    patch:
+      operationId: patchMonthlyGoal
+      summary: 一ヶ月の目標を修正
+      parameters:
+        - in: path
+          name: page_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                content:
+                  type: string
+                review:
+                  type: string
+    # 3. DELETE: 削除
+    delete:
+      operationId: deleteMonthlyGoal
+      summary: 一ヶ月の目標を削除
+      parameters:
+        - in: path
+          name: page_id
+          required: true
+          schema:
+            type: string
+    # 4. GET: 取得
+    get:
+      operationId: getMonthlyGoal
+      summary: 一ヶ月の目標を取得
+      responses:
+        '200':
+          description: 正常に取得
+
+  /3day_goal:
+    # 1. POST: 登録
+    post:
+      operationId: post3DayGoal
+      summary: 三日の目標を追加
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [date, content]
+              properties:
+                date:
+                  type: string
+                content:
+                  type: string
+    # 2. PATCH: 修正
+    patch:
+      operationId: patch3DayGoal
+      summary: 三日の目標を修正
+      parameters:
+        - in: path
+          name: page_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                content:
+                  type: string
+                review:
+                  type: string
+    # 3. DELETE: 削除
+    delete:
+      operationId: delete3DayGoal
+      summary: 三日の目標を削除
+      parameters:
+        - in: path
+          name: page_id
+          required: true
+          schema:
+            type: string
+    # 4. GET: 取得
+    get:
+      operationId: get3DayGoal
+      summary: 三日の目標を取得
+      responses:
+        '200':
+          description: 正常に取得
+
+  /schedule:
+    # 1. POST: 登録
+    post:
+      operationId: postSchedule
+      summary: 一日のスケジュールを追加
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [date, title, content, duration, category]
+              properties:
+                date:
+                  type: string
+                title:
+                  type: string
+                content:
+                  type: string
+                duration:
+                  type: string
+                category:
+                  type: string
+    # 2. PATCH: 修正
+    patch:
+      operationId: patchSchedule
+      summary: 一日のスケジュールを修正
+      parameters:
+        - in: path
+          name: page_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                review:
+                  type: string
+    # 3. DELETE: 削除
+    delete:
+      operationId: deleteSchedule
+      summary: 一日のスケジュールを削除
+      parameters:
+        - in: path
+          name: page_id
+          required: true
+          schema:
+            type: string
+    # 4. GET: 取得
+    get:
+      operationId: getSchedule
+      summary: 一日のスケジュールを取得
+      responses:
+        '200':
+          description: 正常に取得
+
+  /t_stock:
+    # 1. POST: 登録
+    post:
+      operationId: postTStock
+      summary: Tストック（雑務）の追加
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [date, content]
+              properties:
+                date:
+                  type: string
+                content:
+                  type: string
+    # 2. PATCH: 修正
+    patch:
+      operationId: patchTStock
+      summary: Tストック（雑務）の修正
+      parameters:
+        - in: path
+          name: page_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                content:
+                  type: string
+    # 3. DELETE: 削除
+    delete:
+      operationId: deleteTStock
+      summary: Tストック（雑務）の削除
+      parameters:
+        - in: path
+          name: page_id
+          required: true
+          schema:
+            type: string
+    # 4. GET: 取得
+    get:
+      operationId: getTStock
+      summary: Tストック（雑務）を取得
+      responses:
+        '200':
+          description: 正常に取得
+
+  /operation_db:
+    # 1. POST: 登録
+    post:
+      operationId: postOperationDB
+      summary: 運用DBに項目を追加
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, content]
+              properties:
+                title:
+                  type: string
+                content:
+                  type: string
+    # 2. PATCH: 修正
+    patch:
+      operationId: patchOperationDB
+      summary: 運用DBを修正
+      parameters:
+        - in: path
+          name: page_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                content:
+                  type: string
+    # 3. DELETE: 削除
+    delete:
+      operationId: deleteOperationDB
+      summary: 運用DBを削除
+      parameters:
+        - in: path
+          name: page_id
+          required: true
+          schema:
+            type: string
+    # 4. GET: 取得
+    get:
+      operationId: getOperationDB
+      summary: 運用DBを取得
+      responses:
+        '200':
+          description: 正常に取得
+
+  /idea_db:
+    # 1. POST: 登録
+    post:
+      operationId: postIdeaDB
+      summary: 改善アイディアDBに追加
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [date, content]
+              properties:
+                date:
+                  type: string
+                content:
+                  type: string
+    # 2. PATCH: 修正
+    patch:
+      operationId: patchIdeaDB
+      summary: 改善アイディアDBを修正
+      parameters:
+        - in: path
+          name: page_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                content:
+                  type: string
+    # 3. DELETE: 削除
+    delete:
+      operationId: deleteIdeaDB
+      summary: 改善アイディアDBを削除
+      parameters:
+        - in: path
+          name: page_id
+          required: true
+          schema:
+            type: string
+    # 4. GET: 取得
+    get:
+      operationId: getIdeaDB
+      summary: 改善アイディアDBを取得
+      responses:
+        '200':
+          description: 正常に取得
